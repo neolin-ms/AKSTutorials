@@ -130,3 +130,25 @@ view the status of your containers<br>
 ```bash
 kubectl get pods -o wide
 ```
+
+Troubleshoot
+
+Step 1. Create the SSH connection to a Linux node, e.g. aks-nodepool1-12345678-vmss000000.
+```bash
+kubectl debug node/<aks node name> -it --image=mcr.microsoft.com/aks/fundamental/base-ubuntu:v0.0.11
+```
+
+Step 2. Enter the Containerd environment.
+```bash
+chroot /host
+```
+
+Step 3. Check the container images. 
+```bash
+ctr -n k8s.io image list | grep -I <Container Image Name>
+```
+
+Step 4. Check the Container.
+```bash
+ctr -n k8s.io container list
+```
