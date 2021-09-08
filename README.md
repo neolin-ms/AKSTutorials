@@ -68,3 +68,65 @@ To see the tags for a specific image.
 ```bash
 az acr repository show-tags --name ${acr_name} --repository azure-vote-front --output table
 ```
+
+3 - Create Kubernets cluster
+
+Step 1. Create a Kubernetes cluster
+
+Create an AKS cluster using az aks create.
+```bash
+az aks create \
+    --resource-group myResourceGroup \
+    --name myAKSCluster \
+    --node-count 2 \
+    --generate-ssh-keys \
+    --attach-acr <acrName>
+```
+
+Step 2. Install the Kubernets CLI
+
+```bash
+az aks install-cli
+```
+
+Step 3. Connect to cluster using kubectl
+
+To configure kubectl to connect to your Kubernetes cluster
+```bash
+az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+```
+To verify the connection to your cluster
+```bash
+kubectl get nodes
+```
+
+4 - Run application, Tutorial: Run applications in Azure Kubernetes Service (AKS)
+ 
+Step 1. Update the manifest file
+Get the ACR login server name
+```bash
+az acr list --resource-group myResourceGroup --query "[].{acrLoginServer:loginServer}" --output table
+```
+Make sure that you're in the cloned azure-voting-app-redis directory, then open the manifest file with a text editor
+```bash
+vi azure-vote-all-in-one-redis.yaml
+```
+Replace microsoft with your ACR login server name. The image name is found on line 60 of the manifest file.
+```bash
+```
+Step 2. Deploy the application
+deploy your application
+```bash
+kubectl apply -f azure-vote-all-in-one-redis.yaml
+```
+Step 3. Test the application
+To monitor progress
+```bash
+kubectl get service azure-vote-front --watch
+```
+When the EXTERNAL-IP address changes from pending to an actual public IP address, use CTRL-C to stop the kubectl watch process.<br>
+To see the application in action, open a web browser to the external IP address of your service.<br>
+view the status of your containers<br>
+```bash
+kubectl get pods -o wide
+```
